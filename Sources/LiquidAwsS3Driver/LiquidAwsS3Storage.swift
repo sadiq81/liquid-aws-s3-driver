@@ -80,6 +80,16 @@ struct LiquidAwsS3Storage: FileStorage {
                                                    contentLength: Int64(data.count),
                                                    key: key)).map { _ in resolve(key: key) }.get()
     }
+	
+    /// Uploads a file using a key and a data object returning the resolved URL of the uploaded file
+    /// https://docs.aws.amazon.com/general/latest/gr/s3.html
+    func upload(key: String, buffer: ByteBuffer) async throws -> String {
+        try await s3.putObject(S3.PutObjectRequest(acl: .publicRead,
+                                                   body: AWSPayload.byteBuffer(buffer),
+                                                   bucket: bucket,
+                                                   contentLength: Int64(buffer.readableBytes),
+                                                   key: key)).map { _ in resolve(key: key) }.get()
+    }
 
     /// Create a directory structure for a given key
     func createDirectory(key: String) async throws {
